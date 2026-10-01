@@ -17,10 +17,8 @@ integration where:
 - no-fill and errors fail gracefully.
 
 **Facts come only from the reference files in `references/`.** They're built from
-AppLixir's public integration repo. Never invent API names, options, events or
+AppLixir's integration docs and SDK. Never invent API names, options, events or
 endpoints. If something isn't in the references, say so; don't guess.
-`<!-- GAP -->` markers show facts taken from AppLixir source that the public docs
-don't yet cover. Use them, and don't present them as more certain than they are.
 
 **Never generate deprecated v2 APIs:** `invokeApplixirVideoUnit`, `zoneId`/`devId`/`gameId`,
 `applixir.sdk2.1m.js`, string statuses like `"ad-watched"`, or the non-existent Unity

@@ -10,13 +10,13 @@ the **deployed, registered** domain. Expected on a full view:
 | Cause | Check | Fix |
 |---|---|---|
 | SDK not loaded | `typeof initializeAndOpenPlayer` in the console is `"undefined"` | Script tag missing, blocked (ad blocker, CSP) or offline. Guard the call and show "Ads unavailable" (controller in `html5-js.md`). |
-| Bad / unregistered API key | Sometimes an error callback, sometimes **no callback at all** <!-- GAP #7 --> | Copy the key from Dashboard → Sites. The **watchdog** (15 s) re-enables the UI. |
+| Bad / unregistered API key | Sometimes an error callback, sometimes **no callback at all** | Copy the key from Dashboard → Sites. The **watchdog** (15 s) re-enables the UI. |
 | Called before load | Call made at parse time, before the script finished | Call only from a click; with `Application`, `initialize()` after `window.onload`. |
 | Not from a gesture | `autoplayDisallowed` (code 1205) | Call from the click/tap handler itself, not from a `setTimeout` or promise chain started elsewhere. With `preloadAd`, call `handle.show()` inside the click. |
 
 ## No fill ("no ad available")
 
-- **Click path:** only `adErrorCallbackFn` fires (e.g. code `303` / `1009`); there's no `allAdsCompleted`. **`preloadAd()`:** the promise rejects and `adErrorCallbackFn` isn't called. <!-- GAP #7 -->
+- **Click path:** only `adErrorCallbackFn` fires (e.g. code `303` / `1009`); there's no `allAdsCompleted`. **`preloadAd()`:** the promise rejects and `adErrorCallbackFn` isn't called.
 - UI: friendly message ("No ad right now, try again in a bit"), button re-enabled, no reward, game resumes.
 - Common causes:
   - testing on **localhost** or a domain not registered in the dashboard (exact match required);
@@ -38,7 +38,7 @@ The SDK script or ad requests are blocked. Never let that break the game:
 Symptom: console `Refused to load the script/frame/media … because it violates the
 following Content Security Policy directive`.
 
-Starting allowlist from AppLixir's SDK source <!-- GAP #9: medium confidence, pending confirmation -->:
+Starting allowlist from AppLixir's SDK source:
 
 ```
 script-src  'self' https://cdn.applixir.com https://imasdk.googleapis.com https://sdk.privacy-center.org https://securepubads.g.doubleclick.net;
@@ -56,9 +56,9 @@ enforce. A strict CSP and programmatic video ads are hard to combine; `https:` f
 
 ## Iframes, sandboxed embeds, game portals
 
-- Sandboxed iframes need at least `sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"` and `allow="autoplay; fullscreen"`. Without `allow-same-origin` the origin is `null`, which means no consent and `303` (`applixir-support` troubleshooting).
+- Sandboxed iframes need at least `sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"` and `allow="autoplay; fullscreen"`. Without `allow-same-origin` the origin is `null`, which means no consent and `303` (AppLixir support docs).
 - Portals that wrap your game in their iframe may have their own ad SDK and rules. AppLixir is complementary to portal ads. Check the portal's policy on third-party ads before enabling AppLixir there, and keep AppLixir to your own domain if the portal disallows it.
-- Which domain to register for a game shown inside a portal's iframe isn't documented. <!-- GAP #10 --> Ask support@applixir.com.
+- Which domain to register for a game shown inside a portal's iframe isn't documented. Ask support@applixir.com.
 
 ## HTTP vs HTTPS
 

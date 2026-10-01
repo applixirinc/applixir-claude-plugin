@@ -9,7 +9,7 @@ forwards `status.type`.
 
 Do **not** generate `ApplixirWebGL.PlayVideo(...)` / `PlayVideoResult.ADWatched`.
 `CLAUDE.md` and `llms.txt` name them, but no such package exists in any AppLixir
-repo. The jslib bridge below is the supported path. <!-- GAP #5 -->
+repo. The jslib bridge below is the supported path.
 
 ## Files
 

@@ -78,7 +78,7 @@ Order on a full view: `loaded → started → firstQuartile → midpoint → thi
 
 **The SDK also emits types the table doesn't list.** Write handlers so that
 **only `complete` grants** and every other terminal type cleans up. Never rely on
-an exhaustive list. <!-- GAP #6: from source, pending confirmation -->
+an exhaustive list.
 
 | Extra `status.type` (from SDK source) | Treat as |
 |---|---|
@@ -91,7 +91,7 @@ an exhaustive list. <!-- GAP #6: from source, pending confirmation -->
 
 ### Callbacks that may never come: arm a watchdog
 
-From SDK source <!-- GAP #7: from source, pending confirmation -->:
+From the SDK:
 - **No-fill on click:** only `adErrorCallbackFn` fires (no `allAdsCompleted`).
 - **`preloadAd()` no-fill:** the promise rejects and `adErrorCallbackFn` is **not** called.
 - **Bad or unregistered `apiKey`:** sometimes `adErrorCallbackFn`, sometimes **no callback at all** (seen in a browser test on 2026-10-01).
@@ -114,7 +114,7 @@ Source: `CLAUDE.md` § adErrorCallbackFn; type shape in `examples/react/useRewar
 |---|---|---|
 | `303` | "No Ads". Also returned when the request origin doesn't match the registered domain (e.g. origin `null`). | `examples/react-native/README.md`; `CLAUDE.md` § React Native |
 
-More codes from the SDK's own documentation (IMA/VAST codes). <!-- GAP #8: from source (html-player DOCUMENTATION.md), pending confirmation -->
+More codes from the SDK's own documentation (IMA/VAST codes).
 
 | Code | `type` | Usual meaning |
 |---|---|---|
@@ -139,7 +139,7 @@ Source: `examples/unity-webgl/README.md`, `AppLixirBridge.jslib`.
 | `sdk-not-loaded` | Bridge sentinel, `initializeAndOpenPlayer` missing |
 
 Don't generate `ApplixirWebGL.PlayVideo` / `PlayVideoResult`. They're named in
-`CLAUDE.md`/`llms.txt`, but no code for them exists. Use the `.jslib` bridge. <!-- GAP #5 -->
+`CLAUDE.md`/`llms.txt`, but no code for them exists. Use the `.jslib` bridge.
 
 ## Server-side reward callback
 
