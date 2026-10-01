@@ -168,8 +168,7 @@ expected. Just don't commit it to a public repo.
 window.GAME_CONFIG = { applixirApiKey: "YOUR-API-KEY-HERE", playerId: "player-123" };
 ```
 
-With a bundler, read it from env (`import.meta.env.VITE_APPLIXIR_API_KEY`,
-`process.env.APPLIXIR_API_KEY`).
+With a bundler, use its public build-time variables (Vite `VITE_*`, Next.js `NEXT_PUBLIC_*`) for this client-side key.
 
 ### No backend yet?
 

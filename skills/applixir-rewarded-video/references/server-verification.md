@@ -58,7 +58,7 @@ reject a replayed URL.
 7. **Don't log the query string.** It contains your secret. Scrub `secretKey` from access logs and APM.
 8. **HTTPS only.**
 
-Secrets come from env: `APPLIXIR_API_KEY`, `APPLIXIR_CALLBACK_SECRET`.
+Load the API key and callback secret through **the project's existing secrets/config mechanism** (a secrets manager, a config module, the hosting platform's secret settings). The examples below call a `loadConfig()` you replace with that. Never hard-code the secret or commit it.
 
 ## Node.js (Express)
 
@@ -68,11 +68,11 @@ const crypto = require("crypto");
 const express = require("express");
 const Database = require("better-sqlite3");
 
-const API_KEY = process.env.APPLIXIR_API_KEY;
-const SECRET = process.env.APPLIXIR_CALLBACK_SECRET;
+// Replace with your project's secrets/config loader (secrets manager, config module, …).
+const { applixirApiKey: API_KEY, applixirCallbackSecret: SECRET } = require("./config").loadConfig();
 const REWARD_PER_AD = 3;
 const DAILY_CAP = 20;
-if (!API_KEY || !SECRET) throw new Error("Set APPLIXIR_API_KEY and APPLIXIR_CALLBACK_SECRET");
+if (!API_KEY || !SECRET) throw new Error("AppLixir API key / callback secret not configured");
 
 const db = new Database("game.db");
 db.exec(`
@@ -135,7 +135,7 @@ app.get("/api/me", (req, res) => {
   res.json({ lives: row ? row.lives : 0 });
 });
 
-app.listen(process.env.PORT || 3000);
+app.listen(3000);
 ```
 
 ## Python (FastAPI)
@@ -146,8 +146,9 @@ import hashlib, hmac, os, sqlite3
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse
 
-API_KEY = os.environ["APPLIXIR_API_KEY"]
-SECRET = os.environ["APPLIXIR_CALLBACK_SECRET"]
+from config import load_config  # replace with your project's secrets/config loader
+_cfg = load_config()
+API_KEY, SECRET = _cfg["applixir_api_key"], _cfg["applixir_callback_secret"]
 REWARD_PER_AD, DAILY_CAP = 3, 20
 
 db = sqlite3.connect("game.db", check_same_thread=False, isolation_level=None)
@@ -201,8 +202,10 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Data.Sqlite;
 
-var apiKey = Environment.GetEnvironmentVariable("APPLIXIR_API_KEY") ?? throw new("APPLIXIR_API_KEY");
-var secret = Environment.GetEnvironmentVariable("APPLIXIR_CALLBACK_SECRET") ?? throw new("APPLIXIR_CALLBACK_SECRET");
+// Bind from your configuration (appsettings + user-secrets / a secrets manager), section "AppLixir".
+var builder = WebApplication.CreateBuilder(args);
+var apiKey = builder.Configuration["AppLixir:ApiKey"] ?? throw new("AppLixir:ApiKey not configured");
+var secret = builder.Configuration["AppLixir:CallbackSecret"] ?? throw new("AppLixir:CallbackSecret not configured");
 const int RewardPerAd = 3, DailyCap = 20;
 const string Cs = "Data Source=game.db";
 
@@ -216,7 +219,7 @@ using (var c = new SqliteConnection(Cs)) {
 static bool Eq(string a, string b) =>
     CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(a), Encoding.UTF8.GetBytes(b));
 
-var app = WebApplication.Create(args);
+var app = builder.Build();
 
 app.MapGet("/applixir/callback", (HttpRequest req) =>
 {
@@ -269,10 +272,10 @@ Don't silently ship persistent rewards from the client.
 ## Testing the endpoint before ads run
 
 Compute a signature locally and hit your endpoint twice. The second call must
-return `duplicate`.
+return `duplicate`. Type your own values in place of the placeholders.
 
 ```bash
-K=your-key; G=123; U=player-1; T=$(openssl rand -hex 16); S=$APPLIXIR_CALLBACK_SECRET
+K=YOUR-API-KEY; G=YOUR-GAME-ID; U=player-1; T=$(openssl rand -hex 16); S=YOUR-CALLBACK-SECRET
 SIG=$(printf "%s" "$K$G$U$T$S" | md5sum | cut -d' ' -f1)
 curl "https://yourgame.com/applixir/callback?gameApiKey=$K&gameId=$G&userId=$U&tid=$T&signature=$SIG"
 curl "https://yourgame.com/applixir/callback?gameApiKey=$K&gameId=$G&userId=$U&tid=$T&signature=$SIG"  # → duplicate

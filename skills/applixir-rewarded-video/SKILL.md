@@ -45,8 +45,7 @@ Ask, if the conversation hasn't answered it already:
    - Unknown, borderline, or above: continue, and say AppLixir confirms eligibility when it reviews the site.
 
 Never ask for, print, or hard-code the API key or callback secret in source.
-Read them from config/env (`APPLIXIR_API_KEY`, `APPLIXIR_CALLBACK_SECRET`, or
-the project's existing config pattern). The API key is client-side and ends up in
+Load them through the project's existing config/secrets pattern. The API key is client-side and ends up in
 the browser, which is expected. The callback secret must stay server-side.
 
 ## 3. Detect the engine
