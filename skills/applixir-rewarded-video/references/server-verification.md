@@ -69,10 +69,10 @@ const express = require("express");
 const Database = require("better-sqlite3");
 
 // Replace with your project's secrets/config loader (secrets manager, config module, …).
-const { applixirApiKey: API_KEY, applixirCallbackSecret: SECRET } = require("./config").loadConfig();
+const { applixirApiKey: ourApiKey, applixirCallbackSecret: callbackSecret } = require("./config").loadConfig();
 const REWARD_PER_AD = 3;
 const DAILY_CAP = 20;
-if (!API_KEY || !SECRET) throw new Error("AppLixir API key / callback secret not configured");
+if (!ourApiKey || !callbackSecret) throw new Error("AppLixir API key / callback secret not configured");
 
 const db = new Database("game.db");
 db.exec(`
@@ -88,14 +88,14 @@ function safeEqual(a, b) {
 }
 
 function authentic(q) {
-  if (!safeEqual(q.gameApiKey || "", API_KEY)) return false;
+  if (!safeEqual(q.gameApiKey || "", ourApiKey)) return false;
   if (q.signature) {
     const expected = crypto.createHash("md5")
-      .update(`${q.gameApiKey || ""}${q.gameId || ""}${q.userId || ""}${q.tid || ""}${SECRET}`)
+      .update([q.gameApiKey, q.gameId, q.userId, q.tid].map((v) => v || "").join("") + callbackSecret)
       .digest("hex");
     return safeEqual(q.signature.toLowerCase(), expected);
   }
-  return safeEqual(q.secretKey || "", SECRET);
+  return safeEqual(q.secretKey || "", callbackSecret);
 }
 
 const credit = db.transaction((tid, userId, amount) => {
@@ -148,7 +148,7 @@ from fastapi.responses import PlainTextResponse
 
 from config import load_config  # replace with your project's secrets/config loader
 _cfg = load_config()
-API_KEY, SECRET = _cfg["applixir_api_key"], _cfg["applixir_callback_secret"]
+our_api_key, callback_secret = _cfg["applixir_api_key"], _cfg["applixir_callback_secret"]
 REWARD_PER_AD, DAILY_CAP = 3, 20
 
 db = sqlite3.connect("game.db", check_same_thread=False, isolation_level=None)
@@ -159,13 +159,13 @@ CREATE TABLE IF NOT EXISTS ad_rewards (tid TEXT PRIMARY KEY, user_id TEXT NOT NU
 """)
 
 def authentic(q) -> bool:
-    if not hmac.compare_digest(q.get("gameApiKey", ""), API_KEY):
+    if not hmac.compare_digest(q.get("gameApiKey", ""), our_api_key):
         return False
     sig = q.get("signature")
     if sig:
-        raw = f'{q.get("gameApiKey","")}{q.get("gameId","")}{q.get("userId","")}{q.get("tid","")}{SECRET}'
+        raw = "".join(q.get(k, "") for k in ("gameApiKey", "gameId", "userId", "tid")) + callback_secret
         return hmac.compare_digest(sig.lower(), hashlib.md5(raw.encode()).hexdigest())
-    return hmac.compare_digest(q.get("secretKey", ""), SECRET)
+    return hmac.compare_digest(q.get("secretKey", ""), callback_secret)
 
 app = FastAPI()
 
@@ -275,8 +275,10 @@ Compute a signature locally and hit your endpoint twice. The second call must
 return `duplicate`. Type your own values in place of the placeholders.
 
 ```bash
-K=YOUR-API-KEY; G=YOUR-GAME-ID; U=player-1; T=$(openssl rand -hex 16); S=YOUR-CALLBACK-SECRET
-SIG=$(printf "%s" "$K$G$U$T$S" | md5sum | cut -d' ' -f1)
-curl "https://yourgame.com/applixir/callback?gameApiKey=$K&gameId=$G&userId=$U&tid=$T&signature=$SIG"
-curl "https://yourgame.com/applixir/callback?gameApiKey=$K&gameId=$G&userId=$U&tid=$T&signature=$SIG"  # → duplicate
+# Run against your server locally first (e.g. http://localhost:3000).
+BASE=http://localhost:3000/applixir/callback
+K=YOUR-API-KEY; G=YOUR-GAME-ID; U=player-1; T=$(openssl rand -hex 16)
+SIG=$(printf "%s" "$K$G$U$T" "<paste-your-callback-secret>" | md5sum | cut -d' ' -f1)
+curl "$BASE?gameApiKey=$K&gameId=$G&userId=$U&tid=$T&signature=$SIG"
+curl "$BASE?gameApiKey=$K&gameId=$G&userId=$U&tid=$T&signature=$SIG"   # → duplicate
 ```

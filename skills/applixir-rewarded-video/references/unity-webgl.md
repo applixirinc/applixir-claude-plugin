@@ -105,7 +105,7 @@ public class AppLixirManager : MonoBehaviour
     [SerializeField] private string apiKey = "";
 
     // Set this to your logged-in player's id before showing an ad; AppLixir passes it to your server callback.
-    public string PlayerId { get; set; } = "";
+    [HideInInspector] public string PlayerId = "";
 
     private const float WatchdogSeconds = 15f; // bad key / no-fill can produce no callback at all
 
