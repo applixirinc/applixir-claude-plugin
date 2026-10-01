@@ -21,7 +21,7 @@ Then report each check as **PASS / FAIL / N/A** with `file:line` evidence:
 | 8 | Server verification present | A callback endpoint credits the reward; the client doesn't credit persistent rewards by itself |
 | 9 | Server idempotency + auth | Endpoint checks `signature` (MD5) or `secretKey` in constant time, requires `userId`, dedupes on `tid` with a unique constraint in the same transaction as the credit, decides the amount server-side; SDK passes `userId` |
 | 10 | Consent | Existing TCF CMP loads before the SDK, or no CMP and the developer knows AppLixir's notice will show; no faked consent; GPP-only CMP flagged |
-| 11 | Key handling | API key read from config/env, not hard-coded in game logic; callback secret only on the server, never in client code or the repo |
+| 11 | Key handling | API key loaded from the project's config, not hard-coded in game logic; callback secret only on the server, never in client code or the repo |
 | 12 | Domain / environment | Not relying on localhost; `ads.txt` present if the repo serves the site root; callback URL is https with no `?` |
 
 Note: there's no AppLixir "test key" or test mode, so don't fail anything for "test vs production key". Check 11 covers keys.

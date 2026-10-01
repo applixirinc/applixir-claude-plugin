@@ -11,7 +11,7 @@ PASS only if ALL hold:
 - The extra life is granted only when status.type === "complete".
 - Other endings (allAdsCompleted, skip/skipped, manuallyEnded, error) clean up / resume
   without granting.
-- The API key comes from config or env (e.g. import.meta.env), not a hard-coded real key.
+- The API key comes from the project's config (e.g. a config module or build-time variable), not a hard-coded real key.
 
 FAIL if it grants on allAdsCompleted, compares status to a string instead of status.type,
 or uses invokeApplixirVideoUnit/zoneId.

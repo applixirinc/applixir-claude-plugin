@@ -160,7 +160,7 @@ test ads**, which exercise the full lifecycle. Give the user this checklist:
 - [ ] Site registered in the dashboard with the **exact** production domain (Sites → platform Web).
 - [ ] The production API key comes from production config, not a dev placeholder.
 - [ ] `ads.txt` entries from **Dashboard → Settings → Ads.txt** are live at `https://<domain>/ads.txt`.
-- [ ] **Dashboard → Callbacks** points at the production endpoint (https, no `?` in the URL), mode `md5AndTid`, and the secret is in server env only.
+- [ ] **Dashboard → Callbacks** points at the production endpoint (https, no `?` in the URL), mode `md5AndTid`, and the secret lives only in the server's secrets/config.
 - [ ] SDK pinned to `v6.1.0`.
 - [ ] **Site approved by AppLixir.** Approval is a manual review. Until it happens, the site gets test ads. Contact support@applixir.com if approval is pending.
 

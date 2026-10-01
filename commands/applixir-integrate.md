@@ -14,7 +14,7 @@ Integrate AppLixir rewarded video into this project using the `applixir-rewarded
 7. **Consent:** handle an existing CMP or explain AppLixir's built-in notice.
 8. **Finish** with the test checklist and the go-live checklist.
 
-Keep the API key and callback secret out of source; read them from config/env.
+Keep the API key and callback secret out of source; load them through the project's existing config or secrets mechanism.
 
 Extra context from the developer (may be empty):
 

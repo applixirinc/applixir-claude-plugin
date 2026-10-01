@@ -33,7 +33,7 @@ The `project` files are pasted below (you can't open them directly):
 // Gem Smash - vanilla canvas game
 const state = { coins: 0, running: true };
 async function loadProfile() {
-  const res = await fetch("/api/profile", { credentials: "include" });
+  const res = await fetch("/api/profile");
   const p = await res.json();
   state.coins = p.coins; renderHud();
 }
