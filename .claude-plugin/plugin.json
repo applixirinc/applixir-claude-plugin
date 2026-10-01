@@ -1,0 +1,14 @@
+{
+  "name": "applixir",
+  "version": "0.1.0",
+  "description": "Integrate AppLixir rewarded video ads into HTML5, WebGL and Unity Web games, with server-side reward verification and TCF consent.",
+  "author": {
+    "name": "AppLixir Inc.",
+    "email": "robel@applixir.com",
+    "url": "https://www.applixir.com"
+  },
+  "homepage": "https://www.applixir.com",
+  "repository": "https://github.com/applixirinc/applixir-claude-plugin",
+  "license": "MIT",
+  "keywords": ["rewarded-video", "ads", "monetization", "html5", "webgl", "unity-web", "phaser", "game-dev"]
+}
